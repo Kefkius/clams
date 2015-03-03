@@ -193,6 +193,7 @@ boost::filesystem::path GetConfigFile();
 boost::filesystem::path GetPidFile();
 bool LoadClamSpeech();
 bool SaveClamSpeech();
+std::string HashToString(unsigned char* hash, int n);
 std::string GetDefaultClamSpeech();
 boost::filesystem::path GetClamSpeechFile();
 boost::filesystem::path GetQuoteFile();

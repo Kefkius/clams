@@ -277,13 +277,13 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     RandAddSeedPerfmon();
 
     vMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
-    GetRandBytes(&vMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
+    RAND_bytes(&vMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
 
     CMasterKey kMasterKey(nDerivationMethodIndex);
+
     RandAddSeedPerfmon();
-    
     kMasterKey.vchSalt.resize(WALLET_CRYPTO_SALT_SIZE);
-    GetRandBytes(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE);
+    RAND_bytes(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE);
 
     CCrypter crypter;
     int64_t nStartTime = GetTimeMillis();
@@ -2317,7 +2317,152 @@ string CWallet::SendMoney(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNe
     return "";
 }
 
+string CWallet::SendNotary(CWalletTx& wtxNew, uint256 hash, bool fAskFee)
+{ 
+    CReserveKey reservekey(this);
+    int64_t nFeeRequired;
 
+    if (GetBalance() <= 0 ) {
+        LogPrintf("CWallet::SendNotary failed: you require a balance to post a notary entry\n",
+                  FormatMoney(nTransactionFee), FormatMoney(GetBalance()));
+        return _("Insufficient funds");
+    }
+
+    if (IsLocked())
+    {
+        string strError = _("Error: Wallet locked, unable to create norary transaction!");
+        LogPrintf("SendNotary() : %s", strError);
+        return strError;
+    }
+    if (fWalletUnlockStakingOnly)
+    {
+        string strError = _("Error: Wallet unlocked for staking only, unable to create notary transaction.");
+        LogPrintf("SendNotary() : %s", strError);
+        return strError;
+    }
+    if (!CreateNotaryTransaction(wtxNew, reservekey, nFeeRequired, hash))
+    {
+        string strError;
+        if (nFeeRequired > GetBalance())
+            strError = strprintf(_("Error: This notary transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!"), FormatMoney(nFeeRequired));
+        else
+            strError = _("Error: Notary transaction creation failed!");
+        LogPrintf("SendNotary() : %s\n", strError);
+
+        return strError;
+    }
+
+    if (fAskFee && !uiInterface.ThreadSafeAskFee(nFeeRequired, _("Sending...")))
+        return "ABORTED";
+
+    if (!CommitTransaction(wtxNew, reservekey))
+        return _("Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
+
+    return "";
+
+
+}
+
+bool CWallet::CreateNotaryTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, uint256 nHash, const CCoinControl* coinControl) 
+{
+	//vector< pair<CScript, int64_t> > vecSend;
+	//vecSend.push_back(make_pair(scriptPubKey, nValue));
+
+	wtxNew.BindWallet(this);
+
+    wtxNew.strCLAMSpeech = nHash.GetHex();
+
+	{
+		LOCK2(cs_main, cs_wallet);
+		CTxDB txdb("r");
+		{
+			nFeeRet = nTransactionFee;
+			LogPrint("fee", "[FEE] start with fee = %s\n", FormatMoney(nFeeRet));
+			while(true)
+			{
+				wtxNew.vin.clear();
+				wtxNew.vout.clear();
+				wtxNew.fFromMe = true;
+
+				double dPriority = 0;
+				
+				set<pair<const CWalletTx*,unsigned int> > setCoins;
+				int64_t nValueIn=0;
+				if(!SelectCoins(1, wtxNew.nTime, setCoins, nValueIn, coinControl)) {
+					LogPrintf("CWallet::CreateNotaryTransaction failed: coin selection failed\n");
+				}
+
+				BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
+                		{
+                    			int64_t nCredit = pcoin.first->vout[pcoin.second].nValue;
+                    			dPriority += (double)nCredit * pcoin.first->GetDepthInMainChain();
+               		 	}
+
+				int64_t nChange = nValueIn - nFeeRet;
+
+				// NOTE: this depends on the exact behaviour of GetMinFee
+                		if (nFeeRet < MIN_TX_FEE && nChange > 0 && nChange < CENT)
+                		{
+                    			int64_t nMoveToFee = min(nChange, MIN_TX_FEE - nFeeRet);
+                    			LogPrint("fee", "[FEE] change %s is positive and sub-cent so moving %s to fee\n", FormatMoney(nChange), FormatMoney(nMoveToFee));
+                    			nChange -= nMoveToFee;
+                    			nFeeRet += nMoveToFee;
+                    			LogPrint("fee", "[FEE] new change %s and fee %s\n", FormatMoney(nChange), FormatMoney(nFeeRet));
+                		}
+				
+				CScript scriptNotary; 
+				CPubKey vchPubKey;
+				assert(reservekey.GetReservedKey(vchPubKey));
+
+				scriptNotary.SetDestination(vchPubKey.GetID());
+
+               			wtxNew.vout.push_back(CTxOut(nChange, scriptNotary));
+
+		                // Fill vin
+                		BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins)
+                   		wtxNew.vin.push_back(CTxIn(coin.first->GetHash(),coin.second));
+
+				// Sign
+               	 		int nIn = 0;
+                		BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins)
+                    		if (!SignSignature(*this, *coin.first, wtxNew, nIn++)) {
+                        		LogPrintf("CWallet::CreateTransaction failed: signing failed\n");
+                        		return false;
+                    		}
+
+                		// Limit size
+                		unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
+                		if (nBytes >= MAX_STANDARD_TX_SIZE) {
+                    			LogPrintf("CWallet::CreateTransaction failed: transaction too big (%d >= %d)\n", nBytes, MAX_STANDARD_TX_SIZE);
+                    			return false;
+                		}
+                		dPriority /= nBytes;
+
+                		// Check that enough fee is included
+                		int64_t nPayFee = nTransactionFee * (1 + (int64_t)nBytes / 1000);
+                		int64_t nMinFee = GetMinFee(wtxNew, 1, GMF_SEND, nBytes);
+
+                			LogPrint("fee", "[FEE] tx is %d bytes; nPayFee = %s; nMinFee = %s; current fee = %s\n",
+                        		nBytes, FormatMoney(nPayFee), FormatMoney(nMinFee), FormatMoney(nFeeRet));
+                		if (nFeeRet < max(nPayFee, nMinFee))
+                		{
+                   	 		nFeeRet = max(nPayFee, nMinFee);
+                    			LogPrint("fee", "[FEE] so we increased fee to %s and loop again\n", FormatMoney(nFeeRet));
+                    			continue;
+                		}
+
+                		LogPrint("fee", "[FEE] so final fee is %s\n", FormatMoney(nFeeRet));
+
+                		// Fill vtxPrev by copying from previous transactions vtxPrev
+                		wtxNew.AddSupportingTransactions(txdb);
+                		wtxNew.fTimeReceivedIsTxTime = true;
+
+                		break;
+			}
+		}
+	}
+	return true;
+}
 
 string CWallet::SendMoneyToDestination(const CTxDestination& address, int64_t nValue, CWalletTx& wtxNew, std::string strTxComment, bool fAskFee)
 {

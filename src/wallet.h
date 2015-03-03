@@ -208,6 +208,7 @@ public:
     int64_t GetNewMint() const;
     bool CreateTransaction(const std::vector<std::pair<CScript, int64_t> >& vecSend,  CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, std::string strCLAMSpeech, const CCoinControl *coinControl=NULL);
     bool CreateTransaction(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, std::string strCLAMSpeech, const CCoinControl *coinControl=NULL);
+    bool CreateNotaryTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, uint256 hash, const CCoinControl *coinControl=NULL);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
 
     bool GetExpectedStakeTime(uint64_t& nExpected);
@@ -216,6 +217,7 @@ public:
 
     std::string SendMoney(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, std::string strCLAMSpeech = "", bool fAskFee=false);
     std::string SendMoneyToDestination(const CTxDestination &address, int64_t nValue, CWalletTx& wtxNew, std::string strCLAMSpeech = "", bool fAskFee=false);
+    std::string SendNotary(CWalletTx& wtxNew, uint256 hash, bool fAskFee=false);
 
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int nSize = 0);
