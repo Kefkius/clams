@@ -3078,6 +3078,42 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t> &mapKeyBirth) const {
         mapKeyBirth[it->first] = it->second->nTime - 7200; // block times can be 2h off
 }
 
+void CWallet::SearchNotaryTransactions(uint256 hash, std::vector<std::string>& vTxResults)
+{
+    bool notaryFound = false;
+    int blockstogoback = pindexBest->nHeight - 362500;
+
+//    std::string resultTx;
+//    std::vector<std::string> txResults;
+
+    const CBlockIndex* pindexFirst = pindexBest;
+    for (int i = 0; pindexFirst && i < blockstogoback; i++) {
+
+        CBlock block;
+        block.ReadFromDisk(pindexFirst, true);
+
+        BOOST_FOREACH (const CTransaction& tx, block.vtx)
+        {
+            if (tx.strCLAMSpeech == hash.GetHex()) {
+                notaryFound = true;
+//                vTxs.push_back(tx.GetHash());
+///                vTxs.push_back(tx.ToString());
+///                resultTx = tx.GetHash().GetHex();
+                vTxResults.push_back(tx.GetHash().GetHex());
+            }
+        }
+
+        // Currently no option to only return 1 result
+        // if (!multipleresults && notaryFound)
+        //  break;
+        if (notaryFound)
+            break;
+
+        pindexFirst = pindexFirst->pprev;
+    }
+    return;
+}
+
 void CWallet::ClearOrphans()
 {
     list<uint256> orphans;

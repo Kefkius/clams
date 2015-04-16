@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NotaryPage</class>
+ <widget class="QWidget" name="NotaryPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>830</width>
+    <height>368</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QListWidget" name="listWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>250</y>
+     <width>811</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Transactions containing the searched notary ID</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>210</y>
+     <width>631</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="searchNotaryLabel">
+      <property name="text">
+       <string>Search for a Notary ID:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="searchNotaryEntry">
+      <property name="toolTip">
+       <string>Notary ID to search for</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="searchNotaryButton">
+      <property name="text">
+       <string>Search</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <zorder>searchNotaryLabel</zorder>
+  <zorder>searchNotaryEntry</zorder>
+  <zorder>searchNotaryButton</zorder>
+  <zorder>searchNotaryEntry</zorder>
+  <zorder>listWidget</zorder>
+  <zorder>searchNotaryLabel</zorder>
+  <zorder>searchNotaryEntry</zorder>
+  <zorder>searchNotaryButton</zorder>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
