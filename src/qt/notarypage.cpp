@@ -21,7 +21,7 @@ NotaryPage::~NotaryPage()
     delete ui;
 }
 
-void NotaryPage::setSearchResults(std::vector<std::string> txResults)
+void NotaryPage::setSearchResults(std::vector<std::pair<std::string, int> > txResults)
 {
 /*    QStringList txs;
     for (std::vector<std::string>::iterator it = vTxs.begin(); it != v.end(); ++it)
@@ -32,9 +32,9 @@ void NotaryPage::setSearchResults(std::vector<std::string> txResults)
     }
 */
     QStringList txs;
-    for (std::vector<std::string>::iterator iter = txResults.begin(); iter != txResults.end(); ++iter)
+    for (std::vector<std::pair<std::string, int> >::iterator iter = txResults.begin(); iter != txResults.end(); ++iter)
     {
-        QString hashQ = QString::fromStdString(*iter);
+        QString hashQ = QString::fromStdString(iter->first);
         txs.append(hashQ);
     }
     ui->searchNotaryButton->setEnabled(true);
@@ -59,6 +59,6 @@ void NotaryPage::on_searchNotaryButton_clicked()
 void NotaryPage::setModel(WalletModel *model)
 {
     this->model = model;
-    connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::string>)), ui->listWidget, SLOT(clear()));
-    connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::string>)), this, SLOT(setSearchResults(std::vector<std::string>)));
+    connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), ui->listWidget, SLOT(clear()));
+    connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), this, SLOT(setSearchResults(std::vector<std::pair<std::string, int> >)));
 }

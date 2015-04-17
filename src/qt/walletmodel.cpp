@@ -428,7 +428,7 @@ void WalletModel::UnlockContext::CopyFrom(const UnlockContext& rhs)
 void WalletModel::searchNotaryTx(uint256 hash)
 {
 ////    std::vector<std::string> vTxs;
-    std::vector<std::string> txResults;
+    std::vector<std::pair<std::string, int> > txResults;
     wallet->SearchNotaryTransactions(hash, txResults);
 ////    resultTx = wallet->SearchNotaryTransactions(hash);
 //    std::vector<std::string> vTxStrs;

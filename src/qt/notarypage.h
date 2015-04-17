@@ -24,7 +24,7 @@ public:
 //    void searchCompleted(std::vector<uint256> vTxs);
 
 public slots:
-    void setSearchResults(std::vector<std::string> txResults);
+    void setSearchResults(std::vector<std::pair<std::string, int> > txResults);
 
 private slots:
     void on_searchNotaryButton_clicked();

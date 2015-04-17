@@ -175,7 +175,7 @@ public:
 
     void GetKeyBirthTimes(std::map<CKeyID, int64_t> &mapKeyBirth) const;
 
-    void SearchNotaryTransactions(uint256 hash, std::vector<std::string>& vTxResults);
+    void SearchNotaryTransactions(uint256 hash, std::vector<std::pair<std::string, int> >& vTxResults);
 
     /** Increment the next transaction order id
         @return next transaction order id

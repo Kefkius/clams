@@ -185,7 +185,7 @@ signals:
     void message(const QString &title, const QString &message, bool modal, unsigned int style);
 
     // Notary search results
-    void notarySearchComplete(std::vector<std::string> txResults);
+    void notarySearchComplete(std::vector<std::pair<std::string, int> > txResults);
 };
 
 

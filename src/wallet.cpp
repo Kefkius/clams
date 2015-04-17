@@ -3078,7 +3078,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t> &mapKeyBirth) const {
         mapKeyBirth[it->first] = it->second->nTime - 7200; // block times can be 2h off
 }
 
-void CWallet::SearchNotaryTransactions(uint256 hash, std::vector<std::string>& vTxResults)
+void CWallet::SearchNotaryTransactions(uint256 hash, std::vector<std::pair<std::string, int> >& vTxResults)
 {
     bool notaryFound = false;
     int blockstogoback = pindexBest->nHeight - 362500;
@@ -3099,7 +3099,8 @@ void CWallet::SearchNotaryTransactions(uint256 hash, std::vector<std::string>& v
 //                vTxs.push_back(tx.GetHash());
 ///                vTxs.push_back(tx.ToString());
 ///                resultTx = tx.GetHash().GetHex();
-                vTxResults.push_back(tx.GetHash().GetHex());
+///////                vTxResults.push_back(tx.GetHash().GetHex());
+                vTxResults.push_back( std::make_pair(tx.GetHash().GetHex(), pindexFirst->nHeight) );
             }
         }
 
