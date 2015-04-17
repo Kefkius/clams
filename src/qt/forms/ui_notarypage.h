@@ -16,57 +16,44 @@
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
-#include <QtGui/QListWidget>
 #include <QtGui/QPushButton>
+#include <QtGui/QTableWidget>
+#include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
-
-//#include <QtWidgets/QAction>
-//#include <QtWidgets/QApplication>
-//#include <QtWidgets/QButtonGroup>
-//#include <QtWidgets/QHBoxLayout>
-//#include <QtWidgets/QHeaderView>
-//#include <QtWidgets/QLabel>
-//#include <QtWidgets/QLineEdit>
-//#include <QtWidgets/QListWidget>
-//#include <QtWidgets/QPushButton>
-//#include <QtWidgets/QWidget>
+#include <qvalidatedlineedit.h>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_NotaryPage
 {
 public:
-    QListWidget *listWidget;
     QWidget *widget;
+    QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
     QLabel *searchNotaryLabel;
-    QLineEdit *searchNotaryEntry;
+    QValidatedLineEdit *searchNotaryEntry;
     QPushButton *searchNotaryButton;
-
-    // QStringLiteral() is replaced with QString::fromStdString()
-    // for compatibility with Qt4
+    QTableWidget *tableWidget;
 
     void setupUi(QWidget *NotaryPage)
     {
         if (NotaryPage->objectName().isEmpty())
             NotaryPage->setObjectName(QString::fromStdString("NotaryPage"));
         NotaryPage->resize(830, 368);
-        listWidget = new QListWidget(NotaryPage);
-        listWidget->setObjectName(QString::fromStdString("listWidget"));
-        listWidget->setGeometry(QRect(10, 250, 811, 111));
         widget = new QWidget(NotaryPage);
         widget->setObjectName(QString::fromStdString("widget"));
-        widget->setGeometry(QRect(10, 210, 631, 29));
-        horizontalLayout = new QHBoxLayout(widget);
+        widget->setGeometry(QRect(10, 190, 801, 161));
+        verticalLayout = new QVBoxLayout(widget);
+        verticalLayout->setObjectName(QString::fromStdString("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromStdString("horizontalLayout"));
-        horizontalLayout->setContentsMargins(0, 0, 0, 0);
         searchNotaryLabel = new QLabel(widget);
         searchNotaryLabel->setObjectName(QString::fromStdString("searchNotaryLabel"));
 
         horizontalLayout->addWidget(searchNotaryLabel);
 
-        searchNotaryEntry = new QLineEdit(widget);
+        searchNotaryEntry = new QValidatedLineEdit(widget);
         searchNotaryEntry->setObjectName(QString::fromStdString("searchNotaryEntry"));
 
         horizontalLayout->addWidget(searchNotaryEntry);
@@ -76,14 +63,17 @@ public:
 
         horizontalLayout->addWidget(searchNotaryButton);
 
-        searchNotaryLabel->raise();
-        searchNotaryEntry->raise();
-        searchNotaryButton->raise();
-        searchNotaryEntry->raise();
-        listWidget->raise();
-        searchNotaryLabel->raise();
-        searchNotaryEntry->raise();
-        searchNotaryButton->raise();
+
+        verticalLayout->addLayout(horizontalLayout);
+
+        tableWidget = new QTableWidget(widget);
+        tableWidget->setObjectName(QString::fromStdString("tableWidget"));
+        tableWidget->horizontalHeader()->setHighlightSections(false);
+        tableWidget->verticalHeader()->setVisible(false);
+        tableWidget->verticalHeader()->setHighlightSections(false);
+
+        verticalLayout->addWidget(tableWidget);
+
 
         retranslateUi(NotaryPage);
 
@@ -93,9 +83,6 @@ public:
     void retranslateUi(QWidget *NotaryPage)
     {
         NotaryPage->setWindowTitle(QApplication::translate("NotaryPage", "Form", 0));
-#ifndef QT_NO_TOOLTIP
-        listWidget->setToolTip(QApplication::translate("NotaryPage", "Transactions containing the searched notary ID", 0));
-#endif // QT_NO_TOOLTIP
         searchNotaryLabel->setText(QApplication::translate("NotaryPage", "Search for a Notary ID:", 0));
 #ifndef QT_NO_TOOLTIP
         searchNotaryEntry->setToolTip(QApplication::translate("NotaryPage", "Notary ID to search for", 0));

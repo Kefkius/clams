@@ -427,16 +427,8 @@ void WalletModel::UnlockContext::CopyFrom(const UnlockContext& rhs)
 
 void WalletModel::searchNotaryTx(uint256 hash)
 {
-////    std::vector<std::string> vTxs;
     std::vector<std::pair<std::string, int> > txResults;
     wallet->SearchNotaryTransactions(hash, txResults);
-////    resultTx = wallet->SearchNotaryTransactions(hash);
-//    std::vector<std::string> vTxStrs;
-//    for (std::vector<uint256>::iterator it = vTxs.begin(); it != vTxs.end(); ++it)
-//    {
-//        std::string hashStr = it->GetHex();
-//        vTxStrs.push_back(hashStr);
-//    }
     emit notarySearchComplete(txResults);
 }
 

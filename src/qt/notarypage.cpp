@@ -9,11 +9,24 @@ NotaryPage::NotaryPage(QWidget *parent) :
     model(0)
 {
     ui->setupUi(this);
-//    connect(ui->searchNotaryButton, SIGNAL(clicked()), this, SLOT(on_searchNotaryButton_clicked()));
+    ui->tableWidget->setColumnCount(2);
+    ui->tableWidget->setRowCount(1);
 
-    //connect(this, SIGNAL(searchCompleted(std::vector<uint256>)), this, SLOT(setSearchResults(std::vector<uint256>)));
-//    connect(model, SIGNAL(notarySearchComplete(std::string)), this, SLOT(setSearchResults(std::string)));
-//    connect(ui->searchNotaryButton, SIGNAL(clicked()), ui->listWidget, SLOT(clear()));
+    // Column headers
+    QString txHeader = tr("Transaction");
+    QString blockHeader = tr("Block");
+    QStringList tableHeaders = (QStringList() << txHeader << blockHeader);
+    ui->tableWidget->setHorizontalHeaderLabels(tableHeaders);
+
+    // Column widths
+    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->tableWidget->horizontalHeader()->setStretchLastSection(false);
+
+    // Search Validaton
+    QRegExp re("[a-fA-F0-9]{64}");
+    QRegExpValidator *validator = new QRegExpValidator(re);
+    ui->searchNotaryEntry->setValidator(validator);
+
 }
 
 NotaryPage::~NotaryPage()
@@ -23,42 +36,52 @@ NotaryPage::~NotaryPage()
 
 void NotaryPage::setSearchResults(std::vector<std::pair<std::string, int> > txResults)
 {
-/*    QStringList txs;
-    for (std::vector<std::string>::iterator it = vTxs.begin(); it != v.end(); ++it)
-    {
-        //std::string hashStr = it->GetHex();
-        QString hashQ = QString::fromStdString(hashStr);
-        txs.append(hashQ);
-    }
-*/
-    QStringList txs;
+    ui->tableWidget->setRowCount(txResults.size());
+
+    int rowNumber = 0;
     for (std::vector<std::pair<std::string, int> >::iterator iter = txResults.begin(); iter != txResults.end(); ++iter)
     {
         QString hashQ = QString::fromStdString(iter->first);
-        txs.append(hashQ);
+        QString blockQ = QString::number(iter->second);
+
+        QTableWidgetItem *txItem = new QTableWidgetItem(hashQ);
+        QTableWidgetItem *blockItem = new QTableWidgetItem(blockQ);
+        txItem->setFlags(txItem->flags() ^ Qt::ItemIsEditable);
+        blockItem->setFlags(blockItem->flags() ^ Qt::ItemIsEditable);
+        ui->tableWidget->setItem(rowNumber, 0, txItem);
+        ui->tableWidget->setItem(rowNumber, 1, blockItem);
+
+        rowNumber++;
     }
     ui->searchNotaryButton->setEnabled(true);
-//    QString txQ = QString::fromStdString(resultTx);
-//    ui->listWidget->addItem(txQ);
-    ui->listWidget->addItems(txs);
 }
 
 void NotaryPage::on_searchNotaryButton_clicked()
 {
+    bool isValidHash = true;
+    if (ui->searchNotaryEntry->text().length() != 64)
+    {
+        isValidHash = false;
+    }
+    if (!ui->searchNotaryEntry->hasAcceptableInput())
+    {
+        isValidHash = false;
+    }
+    if (!isValidHash)
+    {
+        ui->searchNotaryEntry->setValid(false);
+        return;
+    }
+
     std::string notaryID = ui->searchNotaryEntry->text().toStdString();
-    uint256 hash = uint256(notaryID);
-    //std::vector<unsigned char> vSearch(notaryID.begin(), notaryID.end());
-    //uint256 hash(vSearch);
-    //std::vector<uint256> vTxs(1);
+    uint256 hash(notaryID);
     ui->searchNotaryButton->setEnabled(false);
     model->searchNotaryTx(hash);
-
-    //emit searchCompleted(vTxs);
 }
 
 void NotaryPage::setModel(WalletModel *model)
 {
     this->model = model;
-    connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), ui->listWidget, SLOT(clear()));
+    connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), ui->tableWidget, SLOT(clearContents()));
     connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), this, SLOT(setSearchResults(std::vector<std::pair<std::string, int> >)));
 }
