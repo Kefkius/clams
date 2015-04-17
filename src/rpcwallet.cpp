@@ -1355,11 +1355,17 @@ Value getnotarytransaction(const Array& params, bool fHelp)
             "Get detailed information about <notaryid>\n"
             "\nSearching can take a while\n");
 
-    bool multipleresults = params.size() > 1 ? params[1].get_bool() : false;
 
     uint256 hash;
-    hash.SetHex(params[0].get_str());
+    string strHash;
+    if (params.size() > 0) 
+    	strHash = params[0].get_str();
+    hash.SetHex(strHash);
 
+    bool multipleresults = false;
+    if (params.size() > 1) {
+           multipleresults =  params[1].get_bool();
+   }
 
     Array notaryinfo;
     bool notaryFound = false;
@@ -1379,7 +1385,7 @@ Value getnotarytransaction(const Array& params, bool fHelp)
 			notaryFound = true;
 			
 			entry.push_back(Pair("notaryid", hash.GetHex()));
-			TxToJSON(tx, 0, entry);
+			entry.push_back(Pair("txid", tx.GetHash().GetHex()));
 			
 			notaryinfo.push_back(entry);
 
