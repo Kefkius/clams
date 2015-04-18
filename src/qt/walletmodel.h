@@ -121,6 +121,9 @@ public:
     // Search for a proof-of-existence
     void searchNotaryTx(uint256 hash);
 
+    // Create a proof-of-existence
+    void sendNotaryTx(uint256 hash);
+
     bool getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const;
     void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
     void listCoins(std::map<QString, std::vector<COutput> >& mapCoins) const;
@@ -186,6 +189,9 @@ signals:
 
     // Notary search results
     void notarySearchComplete(std::vector<std::pair<std::string, int> > txResults);
+
+    // Notary transaction ID
+    void notaryTxSent(std::string txError);
 };
 
 

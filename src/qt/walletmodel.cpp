@@ -432,6 +432,14 @@ void WalletModel::searchNotaryTx(uint256 hash)
     emit notarySearchComplete(txResults);
 }
 
+void WalletModel::sendNotaryTx(uint256 hash)
+{
+    CWalletTx wtx;
+
+    std::string txError = wallet->SendNotary(wtx, hash);
+    emit notaryTxSent(txError);
+}
+
 bool WalletModel::getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const
 {
     return wallet->GetPubKey(address, vchPubKeyOut);   

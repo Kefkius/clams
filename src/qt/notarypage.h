@@ -20,18 +20,27 @@ public:
 
     void setModel(WalletModel *model);
 
+    void setNotaryFileName(QString fileName);
+
 //signals:
 //    void searchCompleted(std::vector<uint256> vTxs);
 
 public slots:
     void setSearchResults(std::vector<std::pair<std::string, int> > txResults);
+    void showNotaryTxResult(std::string txError);
 
 private slots:
     void on_searchNotaryButton_clicked();
 
+    void on_selectFileButton_clicked();
+
+    void on_sendNotaryButton_clicked();
+
 private:
     Ui::NotaryPage *ui;
     WalletModel *model;
+
+    std::string hashFile(std::string fileName);
 };
 
 #endif // NOTARYPAGE_H
