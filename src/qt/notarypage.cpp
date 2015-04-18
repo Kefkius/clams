@@ -2,6 +2,11 @@
 #include "ui_notarypage.h"
 #include "uint256.h"
 #include "walletmodel.h"
+#include "util.h"
+#include "openssl/sha.h"
+
+#include <QFileDialog>
+#include <QMessageBox>
 
 NotaryPage::NotaryPage(QWidget *parent) :
     QWidget(parent),
@@ -56,6 +61,24 @@ void NotaryPage::setSearchResults(std::vector<std::pair<std::string, int> > txRe
     ui->searchNotaryButton->setEnabled(true);
 }
 
+void NotaryPage::showNotaryTxResult(std::string txError)
+{
+    if (txError == "") {
+        QMessageBox::information(this, tr("Send Notary Tx"),
+            tr("Notary transaction sent successfully."),
+            QMessageBox::Ok, QMessageBox::Ok);
+    } else {
+        QMessageBox::warning(this, tr("Send Notary Tx"),
+            tr(txError.c_str()),
+            QMessageBox::Ok, QMessageBox::Ok);
+    }
+}
+
+void NotaryPage::setNotaryFileName(QString fileName)
+{
+    ui->sendNotaryEntry->setText(fileName);
+}
+
 void NotaryPage::on_searchNotaryButton_clicked()
 {
     bool isValidHash = true;
@@ -84,4 +107,65 @@ void NotaryPage::setModel(WalletModel *model)
     this->model = model;
     connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), ui->tableWidget, SLOT(clearContents()));
     connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), this, SLOT(setSearchResults(std::vector<std::pair<std::string, int> >)));
+    connect(this->model, SIGNAL(notaryTxSent(std::string)), this, SLOT(showNotaryTxResult(std::string)));
+}
+
+void NotaryPage::on_selectFileButton_clicked()
+{
+    QString fileName;
+    QFileDialog dlg(this);
+    dlg.setFileMode(QFileDialog::ExistingFile);
+
+    if (dlg.exec())
+    {
+        fileName = dlg.selectedFiles()[0];
+        setNotaryFileName(fileName);
+    }
+}
+
+void NotaryPage::on_sendNotaryButton_clicked()
+{
+    std::string fileName = ui->sendNotaryEntry->text().toStdString();
+    std::string fileHash = hashFile(fileName);
+    // Warn if file is NULL
+    if (fileHash == "") {
+        QMessageBox::warning(this, tr("Send Notary Tx"),
+            tr("Unable to open file for hashing."),
+            QMessageBox::Ok, QMessageBox::Ok);
+        return;
+    }
+    uint256 hash;
+    hash.SetHex(fileHash);
+
+    // Make sure wallet is unlocked
+    WalletModel::UnlockContext ctx(model->requestUnlock());
+    if (!ctx.isValid()) {
+        return;
+    }
+
+    model->sendNotaryTx(hash);
+}
+
+std::string NotaryPage::hashFile(std::string fileName)
+{
+    unsigned char hashSha[SHA256_DIGEST_LENGTH];
+    FILE* file = fopen(fileName.c_str(), "rb");
+    if (file == NULL) {
+        return "";
+    }
+
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    char buffer[4096];
+    int bytesRead = 0;
+    while ((bytesRead = fread(buffer, 1, 4096, file)) != 0) {
+        SHA256_Update(&sha256, buffer, bytesRead);
+    }
+    SHA256_Final(hashSha, &sha256);
+    std::string notaryID = HashToString(hashSha, SHA256_DIGEST_LENGTH);
+    LogPrintf("NotaryPage::hashFile: hash of file: %s\n", notaryID);
+
+    fclose(file);
+
+    return notaryID;
 }

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>830</width>
-    <height>368</height>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,53 +17,130 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>190</y>
+     <y>20</y>
      <width>801</width>
-     <height>161</height>
+     <height>381</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="notaryLayout">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QVBoxLayout" name="sendSectionLayout">
       <item>
-       <widget class="QLabel" name="searchNotaryLabel">
+       <widget class="QLabel" name="notaryExplanation">
         <property name="text">
-         <string>Search for a Notary ID:</string>
+         <string>You can create a unique notary ID from a file on your computer and embed it in the blockchain. You can use this to later prove that you had access to the data at a certain time.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QValidatedLineEdit" name="searchNotaryEntry">
-        <property name="toolTip">
-         <string>Notary ID to search for</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="searchNotaryButton">
-        <property name="text">
-         <string>Search</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="sendLayout">
+        <item>
+         <widget class="QLineEdit" name="sendNotaryEntry">
+          <property name="placeholderText">
+           <string>Enter a file name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="selectFileButton">
+          <property name="text">
+           <string>Select File...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="sendNotaryButton">
+          <property name="text">
+           <string>Notarize</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="tableWidget">
-      <attribute name="horizontalHeaderHighlightSections">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="verticalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="verticalHeaderHighlightSections">
-       <bool>false</bool>
-      </attribute>
-     </widget>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="searchSectionLayout">
+      <item>
+       <widget class="QLabel" name="searchNotaryLabel">
+        <property name="text">
+         <string>Search for transactions containing a notary ID below. A notary ID is 64 hex characters long (like a transaction ID).</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="searchLayout">
+        <item>
+         <widget class="QValidatedLineEdit" name="searchNotaryEntry" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Notary ID to search for</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="searchNotaryButton">
+          <property name="text">
+           <string>Search</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="tableWidget">
+        <attribute name="horizontalHeaderHighlightSections">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="verticalHeaderHighlightSections">
+         <bool>false</bool>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
+  <zorder>layoutWidget</zorder>
+  <zorder>notaryExplanation</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>verticalSpacer</zorder>
+  <zorder>verticalSpacer</zorder>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QValidatedLineEdit</class>
+   <extends>QWidget</extends>
+   <header>qvalidatedlineedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
