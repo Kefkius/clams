@@ -10,6 +10,10 @@ namespace Ui {
 }
 class WalletModel;
 
+QT_BEGIN_NAMESPACE
+class QMenu;
+QT_END_NAMESPACE
+
 class NotaryPage : public QWidget
 {
     Q_OBJECT
@@ -30,12 +34,16 @@ private slots:
     void on_searchNotaryButton_clicked();
 
     void on_selectFileButton_clicked();
-
     void on_sendNotaryButton_clicked();
+
+    // Context menu
+    void contextualMenu(const QPoint &point);
+    void onCopyTxID();
 
 private:
     Ui::NotaryPage *ui;
     WalletModel *model;
+    QMenu *contextMenu;
 
     std::string hashFile(std::string fileName);
 };
