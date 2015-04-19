@@ -4,9 +4,13 @@
 #include "walletmodel.h"
 #include "util.h"
 #include "openssl/sha.h"
+#include "guiutil.h"
 
+#include <QApplication>
+#include <QClipboard>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMenu>
 
 NotaryPage::NotaryPage(QWidget *parent) :
     QWidget(parent),
@@ -31,6 +35,14 @@ NotaryPage::NotaryPage(QWidget *parent) :
     QRegExp re("[a-fA-F0-9]{64}");
     QRegExpValidator *validator = new QRegExpValidator(re);
     ui->searchNotaryEntry->setValidator(validator);
+
+    // Context menu
+    QAction *copyTxAction = new QAction(tr("Copy To Clipboard"), this);
+    contextMenu = new QMenu();
+    contextMenu->addAction(copyTxAction);
+    ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(copyTxAction, SIGNAL(triggered()), this, SLOT(onCopyTxID()));
+    connect(ui->tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
 
 }
 
@@ -168,4 +180,21 @@ std::string NotaryPage::hashFile(std::string fileName)
     fclose(file);
 
     return notaryID;
+}
+
+void NotaryPage::contextualMenu(const QPoint &point)
+{
+    QModelIndex index = ui->tableWidget->indexAt(point);
+    if (index.isValid())
+    {
+        contextMenu->exec(QCursor::pos());
+    }
+}
+
+void NotaryPage::onCopyTxID()
+{
+    QString txID = ui->tableWidget->selectedItems().at(0)->text();
+    if (txID.length() > 0) {
+        QApplication::clipboard()->setText(txID);
+    }
 }
