@@ -28,7 +28,7 @@ NotaryPage::NotaryPage(QWidget *parent) :
     ui->tableWidget->setHorizontalHeaderLabels(tableHeaders);
 
     // Column widths
-    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->tableWidget->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
     ui->tableWidget->horizontalHeader()->setStretchLastSection(false);
 
     // Search Validaton
