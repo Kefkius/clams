@@ -22,9 +22,6 @@ public:
 
     void setNotaryFileName(QString fileName);
 
-//signals:
-//    void searchCompleted(std::vector<uint256> vTxs);
-
 public slots:
     void setSearchResults(std::vector<std::pair<std::string, int> > txResults);
     void showNotaryTxResult(std::string txError);

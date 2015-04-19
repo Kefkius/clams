@@ -127,6 +127,13 @@ void NotaryPage::on_sendNotaryButton_clicked()
 {
     std::string fileName = ui->sendNotaryEntry->text().toStdString();
     std::string fileHash = hashFile(fileName);
+    // Warn if file is NULL
+    if (fileHash == "") {
+        QMessageBox::warning(this, tr("Send Notary Tx"),
+            tr("Unable to open file for hashing."),
+            QMessageBox::Ok, QMessageBox::Ok);
+        return;
+    }
     uint256 hash;
     hash.SetHex(fileHash);
 
@@ -144,7 +151,6 @@ std::string NotaryPage::hashFile(std::string fileName)
     unsigned char hashSha[SHA256_DIGEST_LENGTH];
     FILE* file = fopen(fileName.c_str(), "rb");
     if (file == NULL) {
-        // TODO tell the user
         return "";
     }
 
