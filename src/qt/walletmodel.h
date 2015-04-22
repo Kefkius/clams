@@ -191,7 +191,7 @@ signals:
     void notarySearchComplete(std::vector<std::pair<std::string, int> > txResults);
 
     // Notary transaction ID
-    void notaryTxSent(std::string txError);
+    void notaryTxSent(std::string txID, std::string txError);
 };
 
 
