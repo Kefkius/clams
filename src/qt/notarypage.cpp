@@ -77,11 +77,12 @@ void NotaryPage::setSearchResults(std::vector<std::pair<std::string, int> > txRe
     ui->searchNotaryButton->setEnabled(true);
 }
 
-void NotaryPage::showNotaryTxResult(std::string txError)
+void NotaryPage::showNotaryTxResult(std::string txID, std::string txError)
 {
     if (txError == "") {
+        std::string txSentMsg = "Notary transaction sent successfully: " + txID;
         QMessageBox::information(this, tr("Send Notary Tx"),
-            tr("Notary transaction sent successfully."),
+            tr(txSentMsg.c_str()),
             QMessageBox::Ok, QMessageBox::Ok);
     } else {
         QMessageBox::warning(this, tr("Send Notary Tx"),
@@ -123,7 +124,7 @@ void NotaryPage::setModel(WalletModel *model)
     this->model = model;
     connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), ui->tableWidget, SLOT(clearContents()));
     connect(this->model, SIGNAL(notarySearchComplete(std::vector<std::pair<std::string, int> >)), this, SLOT(setSearchResults(std::vector<std::pair<std::string, int> >)));
-    connect(this->model, SIGNAL(notaryTxSent(std::string)), this, SLOT(showNotaryTxResult(std::string)));
+    connect(this->model, SIGNAL(notaryTxSent(std::string, std::string)), this, SLOT(showNotaryTxResult(std::string, std::string)));
 }
 
 void NotaryPage::on_selectFileButton_clicked()

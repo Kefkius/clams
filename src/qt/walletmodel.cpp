@@ -437,7 +437,7 @@ void WalletModel::sendNotaryTx(uint256 hash)
     CWalletTx wtx;
 
     std::string txError = wallet->SendNotary(wtx, hash);
-    emit notaryTxSent(txError);
+    emit notaryTxSent(wtx.GetHash().GetHex(), txError);
 }
 
 bool WalletModel::getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const

@@ -28,7 +28,7 @@ public:
 
 public slots:
     void setSearchResults(std::vector<std::pair<std::string, int> > txResults);
-    void showNotaryTxResult(std::string txError);
+    void showNotaryTxResult(std::string txID, std::string txError);
 
 private slots:
     void on_searchNotaryButton_clicked();
