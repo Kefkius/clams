@@ -425,6 +425,21 @@ void WalletModel::UnlockContext::CopyFrom(const UnlockContext& rhs)
     rhs.relock = false;
 }
 
+void WalletModel::searchNotaryTx(uint256 hash)
+{
+    std::vector<std::pair<std::string, int> > txResults;
+    wallet->SearchNotaryTransactions(hash, txResults);
+    emit notarySearchComplete(txResults);
+}
+
+void WalletModel::sendNotaryTx(uint256 hash)
+{
+    CWalletTx wtx;
+
+    std::string txError = wallet->SendNotary(wtx, hash);
+    emit notaryTxSent(wtx.GetHash().GetHex(), txError);
+}
+
 bool WalletModel::getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const
 {
     return wallet->GetPubKey(address, vchPubKeyOut);   

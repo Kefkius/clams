@@ -15,6 +15,7 @@
 #include "signverifymessagedialog.h"
 #include "optionsdialog.h"
 #include "aboutdialog.h"
+#include "notarypage.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
 #include "editaddressdialog.h"
@@ -75,6 +76,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     toolbar(0),
     rpcConsole(0),
     optionsPage(0),
+    notaryPage(0),
     encryptWalletAction(0),
     changePassphraseAction(0),
     unlockWalletAction(0),
@@ -123,6 +125,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     receiveCoinsPage = new AddressBookPage(AddressBookPage::ForEditing, AddressBookPage::ReceivingTab);
     sendCoinsPage = new SendCoinsDialog(this);
     signVerifyMessageDialog = new SignVerifyMessageDialog(this);
+    notaryPage = new NotaryPage(this);
 
     centralStackedWidget = new QStackedWidget(this);
     centralStackedWidget->addWidget(overviewPage);
@@ -131,6 +134,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     centralStackedWidget->addWidget(receiveCoinsPage);
     centralStackedWidget->addWidget(sendCoinsPage);
     centralStackedWidget->addWidget(rpcConsole);
+    centralStackedWidget->addWidget(notaryPage);
     // ! do not add options page, it gets popped on/off on the fly
 
     QWidget *centralWidget = new QWidget();
@@ -257,6 +261,10 @@ void BitcoinGUI::createActions()
     rpcConsoleAction->setToolTip(tr("Open debugging and diagnostic console"));
     rpcConsoleAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
 
+    notaryAction = new QAction(QIcon(":/icons/history"), tr("&Notary"), tabGroup);
+    notaryAction->setToolTip(tr("Store data in the blockchain"));
+    notaryAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_8));
+
     //styleButton = new QAction(QIcon(":/icons/tx_inout"), tr("&Update Style"), tabGroup);
 
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
@@ -266,6 +274,7 @@ void BitcoinGUI::createActions()
     connect(addressBookAction, SIGNAL(triggered()), this, SLOT(gotoAddressBookPage()));
     connect(optionsAction, SIGNAL(triggered()), this, SLOT(gotoOptionsPage()));
     connect(rpcConsoleAction, SIGNAL(triggered()), this, SLOT(gotoConsolePage()));
+    connect(notaryAction, SIGNAL(triggered()), this, SLOT(gotoNotaryPage()));
 
     quitAction = new QAction(tr("E&xit"), this);
     quitAction->setToolTip(tr("Quit application"));
@@ -457,6 +466,7 @@ void BitcoinGUI::setWalletModel(WalletModel *walletModel)
         addressBookPage->setModel(walletModel->getAddressTableModel());
         receiveCoinsPage->setModel(walletModel->getAddressTableModel());
         sendCoinsPage->setModel(walletModel);
+        notaryPage->setModel(walletModel);
         signVerifyMessageDialog->setModel(walletModel);
 
         setEncryptionStatus(walletModel->getEncryptionStatus());
@@ -851,6 +861,14 @@ void BitcoinGUI::gotoConsolePage()
 {
     rpcConsoleAction->setChecked(true);
     centralStackedWidget->setCurrentWidget(rpcConsole);
+    toggleExportButton(false);
+    showNormalIfMinimized();
+}
+
+void BitcoinGUI::gotoNotaryPage()
+{
+    notaryAction->setChecked(true);
+    centralStackedWidget->setCurrentWidget(notaryPage);
     toggleExportButton(false);
     showNormalIfMinimized();
 }
