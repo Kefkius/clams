@@ -1394,7 +1394,7 @@ Value getnotarytransaction(const Array& params, bool fHelp)
 
     	BOOST_FOREACH (const CTransaction& tx, block.vtx)
     	{	
-		if (tx.strCLAMSpeech == hash.GetHex()) {
+		if (tx.strCLAMSpeech == "NOTARY:" + hash.GetHex()) {
     			Object entry;
 			notaryFound = true;
 			

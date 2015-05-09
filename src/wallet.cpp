@@ -2385,7 +2385,7 @@ bool CWallet::CreateNotaryTransaction(CWalletTx& wtxNew, CReserveKey& reservekey
 
 	wtxNew.BindWallet(this);
 
-    wtxNew.strCLAMSpeech = nHash.GetHex();
+    wtxNew.strCLAMSpeech = "NOTARY:" + nHash.GetHex();
 
 	{
 		LOCK2(cs_main, cs_wallet);
