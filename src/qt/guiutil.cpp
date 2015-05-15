@@ -147,7 +147,7 @@ bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
     //    which will lower-case it (and thus invalidate the address).
     if(uri.startsWith("clam://"))
     {
-        uri.replace(0, 12, "clam:");
+        uri.replace(0, 7, "clam:");
     }
     QUrl uriInstance(uri);
     return parseBitcoinURI(uriInstance, out);
