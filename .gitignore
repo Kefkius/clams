@@ -74,6 +74,7 @@ src/qt/moc_csvmodelwriter.cpp
 src/qt/moc_editaddressdialog.cpp
 src/qt/moc_guiutil.cpp
 src/qt/moc_macdockiconhandler.cpp
+src/qt/moc_notarypage.cpp
 src/qt/moc_notificator.cpp
 src/qt/moc_optionsdialog.cpp
 src/qt/moc_optionsmodel.cpp
