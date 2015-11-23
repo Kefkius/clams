@@ -101,8 +101,11 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             // Payment to self
             int64_t nChange = wtx.GetChange();
 
-            parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendToSelf, "",
-                             -(nDebit - nChange), nCredit - nChange, clamspeech));
+            TransactionRecord sub(hash, nTime, TransactionRecord::SendToSelf, "",
+                             -(nDebit - nChange), nCredit - nChange, clamspeech);
+            if (clamspeech.length() == 71 && clamspeech.compare(0, 7, "notary ") == 0)
+                sub.type = TransactionRecord::Notary;
+            parts.append(sub);
         }
         else if (fAllFromMe)
         {
@@ -131,12 +134,16 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     // Sent to Bitcoin Address
                     sub.type = TransactionRecord::SendToAddress;
                     sub.address = CBitcoinAddress(address).ToString();
+                    if (clamspeech.length() == 71 && clamspeech.compare(0, 7, "notary ") == 0)
+                        sub.type = TransactionRecord::NotarySendToAddress;
                 }
                 else
                 {
                     // Sent to IP, or other non-address transaction like OP_EVAL
                     sub.type = TransactionRecord::SendToOther;
                     sub.address = mapValue["to"];
+                    if (clamspeech.length() == 71 && clamspeech.compare(0, 7, "notary ") == 0)
+                        sub.type = TransactionRecord::NotarySendToOther;
                 }
 
                 int64_t nValue = txout.nValue;
@@ -156,7 +163,10 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             //
             // Mixed debit transaction, can't break down payees
             //
-            parts.append(TransactionRecord(hash, nTime, TransactionRecord::Other, "", nNet, 0, clamspeech));
+            TransactionRecord sub(hash, nTime, TransactionRecord::Other, "", nNet, 0, clamspeech);
+            if (clamspeech.length() == 71 && clamspeech.compare(0, 7, "notary ") == 0)
+                sub.type = TransactionRecord::Notary;
+            parts.append(sub);
         }
     }
 

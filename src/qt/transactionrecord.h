@@ -71,7 +71,10 @@ public:
         SendToOther,
         RecvWithAddress,
         RecvFromOther,
-        SendToSelf
+        SendToSelf,
+        Notary,
+        NotarySendToAddress,
+        NotarySendToOther
     };
 
     /** Number of confirmation recommended for accepting a transaction */
