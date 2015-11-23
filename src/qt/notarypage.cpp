@@ -203,3 +203,17 @@ void NotaryPage::onCopyTxID()
         QApplication::clipboard()->setText(txID);
     }
 }
+
+void NotaryPage::on_searchSelectFileButton_clicked()
+{
+    QString fileName;
+    QFileDialog dlg(this);
+    dlg.setFileMode(QFileDialog::ExistingFile);
+
+    if (dlg.exec())
+    {
+        fileName = dlg.selectedFiles()[0];
+        QString fileHash = QString::fromStdString(hashFile(fileName.toStdString()));
+        ui->searchNotaryEntry->setText(fileHash);
+    }
+}

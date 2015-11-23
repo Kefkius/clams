@@ -102,6 +102,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="searchSelectFileButton">
+           <property name="text">
+            <string>Select File...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="searchNotaryButton">
            <property name="text">
             <string>Search</string>

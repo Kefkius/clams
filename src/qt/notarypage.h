@@ -40,6 +40,8 @@ private slots:
     void contextualMenu(const QPoint &point);
     void onCopyTxID();
 
+    void on_searchSelectFileButton_clicked();
+
 private:
     Ui::NotaryPage *ui;
     WalletModel *model;
