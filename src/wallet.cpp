@@ -2370,7 +2370,7 @@ bool CWallet::CreateNotaryTransaction(CWalletTx& wtxNew, CReserveKey& reservekey
 
 	wtxNew.BindWallet(this);
 
-    wtxNew.strCLAMSpeech = nHash.GetHex();
+    wtxNew.strCLAMSpeech = "notary " + nHash.GetHex();
 
 	{
 		LOCK2(cs_main, cs_wallet);
@@ -3081,6 +3081,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t> &mapKeyBirth) const {
 void CWallet::SearchNotaryTransactions(uint256 hash, std::vector<std::pair<std::string, int> >& vTxResults)
 {
     int blockstogoback = pindexBest->nHeight - 362500;
+    std::string matchingCLAMSpeech = "notary " + hash.GetHex();
 
     const CBlockIndex* pindexFirst = pindexBest;
     for (int i = 0; pindexFirst && i < blockstogoback; i++) {
@@ -3090,7 +3091,7 @@ void CWallet::SearchNotaryTransactions(uint256 hash, std::vector<std::pair<std::
 
         BOOST_FOREACH (const CTransaction& tx, block.vtx)
         {
-            if (tx.strCLAMSpeech == hash.GetHex()) {
+            if (tx.strCLAMSpeech == matchingCLAMSpeech) {
                 vTxResults.push_back( std::make_pair(tx.GetHash().GetHex(), pindexFirst->nHeight) );
             }
         }
