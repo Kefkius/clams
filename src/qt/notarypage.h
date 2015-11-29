@@ -40,7 +40,9 @@ private slots:
     void contextualMenu(const QPoint &point);
     void onCopyTxID();
 
-    void on_searchSelectFileButton_clicked();
+    void on_calcNotaryIDbutton_clicked();
+
+    void on_notaryIDEdit_textChanged(const QString &arg1);
 
 private:
     Ui::NotaryPage *ui;
