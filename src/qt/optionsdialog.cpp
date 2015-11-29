@@ -196,6 +196,11 @@ void OptionsDialog::saveClamQuotes()
     emit onClamSpeechUpdated();
 }
 
+void OptionsDialog::reloadClamQuotes()
+{
+    loadClamQuotes();
+}
+
 void OptionsDialog::enableApplyButton()
 {
     ui->applyButton->setEnabled(true);

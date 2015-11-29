@@ -24,6 +24,9 @@ public:
     void loadClamQuotes();
     void saveClamQuotes();
 
+public slots:
+    void reloadClamQuotes();
+
 signals:
     void proxyIpValid(QValidatedLineEdit *object, bool fValid);
     void onClamSpeechUpdated();

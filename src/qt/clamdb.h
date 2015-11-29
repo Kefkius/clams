@@ -7,6 +7,7 @@ namespace Ui {
 class ClamDB;
 }
 class WalletModel;
+class ClamourPage;
 class NotaryPage;
 
 class ClamDB : public QWidget
@@ -19,9 +20,16 @@ public:
 
     void setModel(WalletModel *model);
 
+public slots:
+       void on_clamspeech_updated();
+
+signals:
+    void onClamSpeechUpdated();
+
 private:
     Ui::ClamDB *ui;
     WalletModel *model;
+    ClamourPage *clamourPage;
     NotaryPage *notaryPage;
 };
 
