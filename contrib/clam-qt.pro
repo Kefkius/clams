@@ -241,7 +241,8 @@ HEADERS += src/qt/bitcoingui.h \
     src/chainparams.h \
     src/qt/forms/notarypage.h \
     src/qt/notarypage.h \
-    src/qt/clamdb.h
+    src/qt/clamdb.h \
+    src/qt/clamourpage.h
 
 SOURCES += src/txdb-leveldb.cpp \
     src/clamspeech.cpp \
@@ -324,7 +325,8 @@ SOURCES += src/txdb-leveldb.cpp \
     src/pbkdf2.cpp \
     src/qt/forms/notarypage.cpp \
     src/qt/notarypage.cpp \
-    src/qt/clamdb.cpp
+    src/qt/clamdb.cpp \
+    src/qt/clamourpage.cpp
 
 RESOURCES += \
     src/qt/bitcoin.qrc
@@ -343,9 +345,8 @@ FORMS += \
     src/qt/forms/rpcconsole.ui \
     src/qt/forms/optionsdialog.ui \
     src/qt/forms/notarypage.ui \
-    src/qt/clamdb.ui \
-    src/qt/clamdb.ui \
-    src/qt/forms/clamdb.ui
+    src/qt/forms/clamdb.ui \
+    src/qt/forms/clamourpage.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h

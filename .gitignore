@@ -68,6 +68,7 @@ src/qt/moc_bitcoinamountfield.cpp
 src/qt/moc_bitcoingui.cpp
 src/qt/moc_bitcoinunits.cpp
 src/qt/moc_clamdb.cpp
+src/qt/moc_clamourpage.cpp
 src/qt/moc_clientmodel.cpp
 src/qt/moc_coincontroldialog.cpp
 src/qt/moc_coincontroltreewidget.cpp
@@ -98,6 +99,7 @@ src/qt/overviewpage.moc
 src/qt/rpcconsole.moc
 src/qt/forms/ui_aboutdialog.h
 src/qt/forms/ui_clamdb.h
+src/qt/forms/ui_clamourpage.h
 src/qt/forms/ui_notarypage.h
 src/qt/forms/ui_optionsdialog.h
 src/qt/forms/ui_overviewpage.h
