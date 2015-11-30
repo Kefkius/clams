@@ -2431,8 +2431,22 @@ string CWallet::SendMoney(CScript scriptPubKey, int64_t nValue, int64_t nCount, 
     return "";
 }
 
-string CWallet::SendNotary(CWalletTx& wtxNew, uint256 hash, bool fAskFee)
+string CWallet::SendCLAMSpeech(CWalletTx& wtxNew, string clamSpeech, string prefix, bool fAskFee)
 { 
+    if (prefix == "notary") 
+    {
+        uint256 hash;
+        hash.SetHex(clamSpeech);
+        clamSpeech = "notary " + hash.GetHex();
+
+    } 
+    else if (prefix == "clamour") 
+    {
+        uint256 hash;
+        hash.SetHex(clamSpeech);
+        clamSpeech = "create clamour" + hash.GetHex();
+    } 
+
     CReserveKey reservekey(this);
     int64_t nFeeRequired;
 
@@ -2454,7 +2468,7 @@ string CWallet::SendNotary(CWalletTx& wtxNew, uint256 hash, bool fAskFee)
         LogPrintf("SendNotary() : %s", strError);
         return strError;
     }
-    if (!CreateNotaryTransaction(wtxNew, reservekey, nFeeRequired, hash))
+    if (!CreateCLAMSpeechTransaction(wtxNew, reservekey, nFeeRequired, clamSpeech))
     {
         string strError;
         if (nFeeRequired > GetBalance())
@@ -2477,14 +2491,14 @@ string CWallet::SendNotary(CWalletTx& wtxNew, uint256 hash, bool fAskFee)
 
 }
 
-bool CWallet::CreateNotaryTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, uint256 nHash, const CCoinControl* coinControl) 
+bool CWallet::CreateCLAMSpeechTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, std::string clamSpeech, const CCoinControl* coinControl) 
 {
 	//vector< pair<CScript, int64_t> > vecSend;
 	//vecSend.push_back(make_pair(scriptPubKey, nValue));
 
 	wtxNew.BindWallet(this);
 
-    wtxNew.strCLAMSpeech = "notary " + nHash.GetHex();
+    wtxNew.strCLAMSpeech = clamSpeech;   
 
 	{
 		LOCK2(cs_main, cs_wallet);

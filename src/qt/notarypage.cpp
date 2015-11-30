@@ -151,8 +151,6 @@ void NotaryPage::on_sendNotaryButton_clicked()
             QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
-    uint256 hash;
-    hash.SetHex(fileHash);
 
     // Make sure wallet is unlocked
     WalletModel::UnlockContext ctx(model->requestUnlock());
@@ -160,7 +158,7 @@ void NotaryPage::on_sendNotaryButton_clicked()
         return;
     }
 
-    model->sendNotaryTx(hash);
+    model->sendNotaryTx(fileHash);
 }
 
 std::string NotaryPage::hashFile(std::string fileName)

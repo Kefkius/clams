@@ -1479,7 +1479,7 @@ UniValue sendnotarytransaction(const UniValue& params, bool fHelp)
 
     // Wallet comments
     CWalletTx wtx;
-    uint256 hash;
+    std::string prefix = "notary";
 
     unsigned char hashSha[SHA256_DIGEST_LENGTH];
     FILE* file=fopen(params[0].get_str().c_str(),"rb");
@@ -1496,15 +1496,12 @@ UniValue sendnotarytransaction(const UniValue& params, bool fHelp)
     }
     SHA256_Final(hashSha,&sha256);
     std::string nHash = HashToString(hashSha, SHA256_DIGEST_LENGTH);
-    hash.SetHex(nHash);
-    LogPrintf("Hash from uint: %s\n", hash.GetHex());
-    
     fclose(file);
 
     if (pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
-    string strError = pwalletMain->SendNotary(wtx, hash);
+    string strError = pwalletMain->SendCLAMSpeech(wtx, nHash, prefix);
     if (strError != "")
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
 

@@ -122,7 +122,7 @@ public:
     void searchNotaryTx(uint256 hash);
 
     // Create a proof-of-existence
-    void sendNotaryTx(uint256 hash);
+    void sendNotaryTx(std::string hash);
 
     bool getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const;
     void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
