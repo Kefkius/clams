@@ -193,6 +193,7 @@ extern UniValue getrewardto(const UniValue& params, bool fHelp);
 extern UniValue setrewardto(const UniValue& params, bool fHelp);
 
 extern UniValue sendnotarytransaction(const UniValue& params, bool fHelp);
+extern UniValue createclamour(const UniValue& params, bool fHelp);
 extern UniValue getnotarytransaction(const UniValue& params, bool fHelp);
 
 #endif

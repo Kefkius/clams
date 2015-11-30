@@ -2442,9 +2442,11 @@ string CWallet::SendCLAMSpeech(CWalletTx& wtxNew, string clamSpeech, string pref
     } 
     else if (prefix == "clamour") 
     {
-        uint256 hash;
-        hash.SetHex(clamSpeech);
-        clamSpeech = "create clamour" + hash.GetHex();
+        clamSpeech = "create clamour" + clamSpeech;
+    } 
+    else if (prefix.length() > 0)
+    {
+        clamSpeech = prefix + clamSpeech;
     } 
 
     CReserveKey reservekey(this);

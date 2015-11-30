@@ -1506,8 +1506,53 @@ UniValue sendnotarytransaction(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
 
     return wtx.GetHash().GetHex();
+}
 
+UniValue createclamour(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() < 1)
+        throw runtime_error(
+            "createclamour <clamourProposal> [url]\n"
+            "<clamourProposal> is a full 64 character sha256 hash of a CLAMour proposal.\n"
+            "Any string of text that is not 64 characters in length\n"
+            "will be treated as the body of a CLAMour proposal and automatically\n"
+            "hashed into sha256\n\n"
+            "[url] is an optional field to include a link to your CLAMour proposal"
+            + HelpRequiringPassphrase());
 
+    CWalletTx wtx;
+    std::string prefix = "clamour";
+    std::string strHash = params[0].get_str();
+    std::string clamSpeech = "";
+    std::string url = "";
+
+    if (params.size() > 1) 
+        url = params[1].get_str();
+
+    //  if input string is 
+    if (strHash.length() != 64){
+            unsigned char hash[SHA256_DIGEST_LENGTH];
+            SHA256_CTX sha256;
+            SHA256_Init(&sha256);
+            SHA256_Update(&sha256, strHash.c_str(), strHash.size());
+            SHA256_Final(hash, &sha256);
+            stringstream ss;
+            for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+            {
+                ss << hex << setw(2) << setfill('0') << (int)hash[i];
+            }
+            strHash = ss.str();
+    }
+
+    clamSpeech = strHash + url;
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+    string strError = pwalletMain->SendCLAMSpeech(wtx, clamSpeech, prefix);
+    if (strError != "")
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+
+    return wtx.GetHash().GetHex();
 }
 
 
