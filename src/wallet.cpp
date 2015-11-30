@@ -2442,7 +2442,7 @@ string CWallet::SendCLAMSpeech(CWalletTx& wtxNew, string clamSpeech, string pref
     } 
     else if (prefix == "clamour") 
     {
-        clamSpeech = "create clamour" + clamSpeech;
+        clamSpeech = "create clamour " + clamSpeech;
     } 
     else if (prefix.length() > 0)
     {

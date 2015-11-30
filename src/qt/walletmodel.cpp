@@ -440,6 +440,14 @@ void WalletModel::sendNotaryTx(std::string hash)
     emit notaryTxSent(wtx.GetHash().GetHex(), txError);
 }
 
+void WalletModel::sendClamourTx(std::string hash)
+{
+    CWalletTx wtx;
+    std::string prefix = "clamour";
+    std::string txError = wallet->SendCLAMSpeech(wtx, hash, prefix);
+    emit clamourTxSent(wtx.GetHash().GetHex(), txError);
+}
+
 bool WalletModel::getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const
 {
     return wallet->GetPubKey(address, vchPubKeyOut);   

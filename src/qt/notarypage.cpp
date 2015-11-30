@@ -138,8 +138,10 @@ void NotaryPage::on_sendNotaryButton_clicked()
     }
 */
     std::string fileHash = ui->notaryIDEdit->text().toStdString();
+/*
     uint256 hash;
     hash.SetHex(fileHash);
+*/
 
     // Make sure wallet is unlocked
     WalletModel::UnlockContext ctx(model->requestUnlock());

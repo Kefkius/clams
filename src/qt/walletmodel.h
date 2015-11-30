@@ -124,6 +124,9 @@ public:
     // Create a proof-of-existence
     void sendNotaryTx(std::string hash);
 
+    // Create a petition
+    void sendClamourTx(std::string hash);
+
     bool getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const;
     void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
     void listCoins(std::map<QString, std::vector<COutput> >& mapCoins) const;
@@ -192,6 +195,9 @@ signals:
 
     // Notary transaction ID
     void notaryTxSent(std::string txID, std::string txError);
+
+    // Petition created
+    void clamourTxSent(std::string txID, std::string txError);
 };
 
 

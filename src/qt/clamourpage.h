@@ -6,6 +6,7 @@
 namespace Ui {
 class ClamourPage;
 }
+class WalletModel;
 
 class ClamourPage : public QWidget
 {
@@ -15,8 +16,13 @@ public:
     explicit ClamourPage(QWidget *parent = 0);
     ~ClamourPage();
 
+    void setModel(WalletModel *model);
+
 signals:
     void onClamSpeechUpdated();
+
+public slots:
+    void showClamourTxResult(std::string txID, std::string txError);
 
 private slots:
     void on_createPetitionEdit_textChanged();
@@ -27,8 +33,7 @@ private slots:
 
 private:
     Ui::ClamourPage *ui;
-
-    std::string hashPetition(std::string petitionText);
+    WalletModel *model;
 
     void saveVotes();
 };

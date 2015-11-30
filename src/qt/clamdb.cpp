@@ -29,6 +29,7 @@ ClamDB::~ClamDB()
 void ClamDB::setModel(WalletModel *model)
 {
     this->model = model;
+    this->clamourPage->setModel(model);
     this->notaryPage->setModel(model);
 }
 

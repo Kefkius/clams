@@ -3,12 +3,15 @@
 #include "openssl/sha.h"
 #include "clamspeech.h"
 #include "util.h"
+#include "walletmodel.h"
 
 #include <QDebug>
+#include <QMessageBox>
 
 ClamourPage::ClamourPage(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ClamourPage)
+    ui(new Ui::ClamourPage),
+    model(0)
 {
     ui->setupUi(this);
 }
@@ -16,38 +19,6 @@ ClamourPage::ClamourPage(QWidget *parent) :
 ClamourPage::~ClamourPage()
 {
     delete ui;
-}
-/*
-std::string NotaryPage::hashFile(std::string fileName)
-{
-    unsigned char hashSha[SHA256_DIGEST_LENGTH];
-    FILE* file = fopen(fileName.c_str(), "rb");
-    if (file == NULL) {
-        return "";
-    }
-
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    char buffer[4096];
-    int bytesRead = 0;
-    while ((bytesRead = fread(buffer, 1, 4096, file)) != 0) {
-        SHA256_Update(&sha256, buffer, bytesRead);
-    }
-    SHA256_Final(hashSha, &sha256);
-    std::string notaryID = HashToString(hashSha, SHA256_DIGEST_LENGTH);
-    LogPrintf("NotaryPage::hashFile: hash of file: %s\n", notaryID);
-
-    fclose(file);
-
-    return notaryID;
-}
-*/
-
-// Create a petition ID.
-std::string ClamourPage::hashPetition(std::string petitionText)
-{
-    unsigned char hashSha[SHA256_DIGEST_LENGTH];
-    return "";
 }
 
 // Calculate notary ID when text changes.
@@ -60,18 +31,26 @@ void ClamourPage::on_createPetitionEdit_textChanged()
         return;
     }
     ui->createPetitionButton->setEnabled(true);
-    std::string petitionHash(hashPetition(petitionText));
+    std::string petitionHash(StrToSHA256(petitionText));
+    ui->petitionIDEdit->setText(QString::fromStdString(petitionHash));
 }
 
 // Create a tx that creates a petitition
 void ClamourPage::on_createPetitionButton_clicked()
 {
     std::string petitionHash(ui->petitionIDEdit->text().toStdString());
-    std::string clamSpeech = "create clamour " + petitionHash;
+
+    WalletModel::UnlockContext ctx(model->requestUnlock());
+    if (!ctx.isValid()) {
+        return;
+    }
+
+    model->sendClamourTx(petitionHash);
 
     if (ui->setVoteCheckBox->isChecked())
     {
-        // TODO add to stake speech
+        strDefaultStakeSpeech = "clamour " + petitionHash.substr(0, 8);
+        clamSpeech.push_back(strDefaultStakeSpeech);
     }
 }
 
@@ -85,7 +64,6 @@ void ClamourPage::saveVotes()
 {
     clamSpeech.clear();
     QStringList list = ui->votesEdit->toPlainText().replace("\n", ",").replace(" ", ",").split(',', QString::SkipEmptyParts);
-    //std::string newSpeech = "clamour";
     std::vector<std::string> newSpeeches(1, "clamour");
 
     foreach ( const QString &strLine, list )
@@ -104,7 +82,6 @@ void ClamourPage::saveVotes()
     {
         clamSpeech.push_back(*it);
     }
-    //clamSpeech.push_back(newSpeech);
 
     // save new speech
     qDebug() << "saving stake petitions";
@@ -112,4 +89,24 @@ void ClamourPage::saveVotes()
         qDebug() << "CLAMSpeech petitions FAILED to save!";
 
     emit onClamSpeechUpdated();
+}
+
+void ClamourPage::showClamourTxResult(std::string txID, std::string txError)
+{
+    if (txError == "") {
+        std::string txSentMsg = "Clamour petition created successfully: " + txID;
+        QMessageBox::information(this, tr("Create Clamour Petition"),
+            tr(txSentMsg.c_str()),
+            QMessageBox::Ok, QMessageBox::Ok);
+        ui->createPetitionButton->setEnabled(false);
+    } else {
+        QMessageBox::warning(this, tr("Create Clamour Petition"),
+            tr(txError.c_str()),
+            QMessageBox::Ok, QMessageBox::Ok);
+    }
+}
+
+void ClamourPage::setModel(WalletModel *model)
+{
+    connect(this->model, SIGNAL(clamourTxSent(std::string, std::string)), this, SLOT(showClamourTxResult(std::string, std::string)));
 }
