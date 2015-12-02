@@ -199,6 +199,8 @@ bool LoadClamourClamSpeech();
 bool SaveClamourClamSpeech();
 std::string HashToString(unsigned char* hash, int n);
 std::string GetDefaultClamSpeech();
+std::string GetDefaultClamourClamSpeech();
+std::string GetRandomClamourClamSpeech();
 boost::filesystem::path GetClamSpeechFile();
 boost::filesystem::path GetQuoteFile();
 #ifndef WIN32

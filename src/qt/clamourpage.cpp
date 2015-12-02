@@ -2,6 +2,7 @@
 #include "ui_clamourpage.h"
 #include "openssl/sha.h"
 #include "clamspeech.h"
+#include "main.h"
 #include "util.h"
 #include "walletmodel.h"
 
@@ -14,7 +15,8 @@ ClamourPage::ClamourPage(QWidget *parent) :
     model(0)
 {
     ui->setupUi(this);
-    loadVotes();
+    ui->createPetitionButton->setEnabled(false);
+    ui->setVoteCheckBox->setEnabled(false);
 }
 
 ClamourPage::~ClamourPage()
@@ -29,9 +31,11 @@ void ClamourPage::on_createPetitionEdit_textChanged()
     if (petitionText.length() == 0)
     {
         ui->createPetitionButton->setEnabled(false);
+        ui->setVoteCheckBox->setEnabled(false);
         return;
     }
     ui->createPetitionButton->setEnabled(true);
+    ui->setVoteCheckBox->setEnabled(true);
     std::string petitionHash(StrToSHA256(petitionText));
     ui->petitionIDEdit->setText(QString::fromStdString(petitionHash));
 }
@@ -52,7 +56,10 @@ void ClamourPage::on_createPetitionButton_clicked()
     {
         strDefaultStakeSpeech = "clamour " + petitionHash.substr(0, 8);
         clamourClamSpeech.push_back(strDefaultStakeSpeech);
-        saveVotes();
+        qDebug() << "saving clamour petitions";
+        if ( !SaveClamourClamSpeech() )
+            qDebug() << "Clamour CLAMSpeech petitions FAILED to save!";
+        loadVotes();
     }
 }
 
@@ -73,31 +80,33 @@ void ClamourPage::loadVotes()
 
 void ClamourPage::saveVotes()
 {
-    clamourClamSpeech.clear();
     QStringList list = ui->votesEdit->toPlainText().replace("\n", ",").replace(" ", ",").split(',', QString::SkipEmptyParts);
     std::vector<std::string> newSpeeches(1, "clamour");
 
     foreach ( const QString &strLine, list )
-        if ( !strLine.isEmpty() && strLine.length() == 8 )
+        if ( !strLine.isEmpty() && strLine.length() >= 8 && IsHex(strLine.toStdString()) )
         {
             // Create new string if necessary
-            if (newSpeeches.back().length() >= 131)
+            if (newSpeeches.back().length() > MAX_TX_COMMENT_LEN - 9)
             {
                 newSpeeches.push_back("clamour");
             }
             std::string &newSpeech = newSpeeches.back();
-            newSpeech = newSpeech + " " + strLine.trimmed().toStdString();
+            newSpeech = newSpeech + " " + strLine.trimmed().left(8).toStdString();
         }
 
+    clamourClamSpeech.clear();
     for (std::vector<std::string>::iterator it = newSpeeches.begin(); it != newSpeeches.end(); ++it)
     {
         clamourClamSpeech.push_back(*it);
     }
 
     // save new speech
-    qDebug() << "saving stake petitions";
+    qDebug() << "saving clamour petitions";
     if ( !SaveClamourClamSpeech() )
         qDebug() << "Clamour CLAMSpeech petitions FAILED to save!";
+
+    loadVotes();
 }
 
 void ClamourPage::showClamourTxResult(std::string txID, std::string txError)
@@ -108,6 +117,7 @@ void ClamourPage::showClamourTxResult(std::string txID, std::string txError)
             tr(txSentMsg.c_str()),
             QMessageBox::Ok, QMessageBox::Ok);
         ui->createPetitionButton->setEnabled(false);
+        ui->setVoteCheckBox->setEnabled(false);
     } else {
         QMessageBox::warning(this, tr("Create Clamour Petition"),
             tr(txError.c_str()),
@@ -117,5 +127,7 @@ void ClamourPage::showClamourTxResult(std::string txID, std::string txError)
 
 void ClamourPage::setModel(WalletModel *model)
 {
+    this->model = model;
     connect(this->model, SIGNAL(clamourTxSent(std::string, std::string)), this, SLOT(showClamourTxResult(std::string, std::string)));
+    loadVotes();
 }

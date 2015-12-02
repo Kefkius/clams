@@ -1166,6 +1166,19 @@ string GetDefaultClamSpeech() {
     return strDefaultSpeech;
 }
 
+string GetRandomClamourClamSpeech() {
+    if (clamourClamSpeech.empty())
+        return "";
+    int index = rand() % clamourClamSpeech.size();
+    return clamourClamSpeech[index];
+}
+
+string GetDefaultClamourClamSpeech() {
+    if (strDefaultStakeSpeech == "")
+        return GetRandomClamourClamSpeech();
+    return strDefaultStakeSpeech;
+}
+
 bool SaveClamSpeech() 
 {
     if (boost::filesystem::exists(GetClamSpeechFile())) {
@@ -1203,17 +1216,15 @@ bool LoadClamourClamSpeech()
 
 bool SaveClamourClamSpeech()
 {
-    if (boost::filesystem::exists(GetClamourClamSpeechFile())) {
-        FILE* file = fopen(GetClamourClamSpeechFile().string().c_str(), "w");
-        if (file)
-        {
-            for (std::vector<std::string>::iterator it = clamourClamSpeech.begin(); it != clamourClamSpeech.end(); it++) {
-                fprintf(file, "%s\n", it->c_str());
-            }
-            fclose(file);
-        } else {
-            return false;
+    FILE* file = fopen(GetClamourClamSpeechFile().string().c_str(), "w");
+    if (file)
+    {
+        for (std::vector<std::string>::iterator it = clamourClamSpeech.begin(); it != clamourClamSpeech.end(); it++) {
+            fprintf(file, "%s\n", it->c_str());
         }
+        fclose(file);
+    } else {
+        return false;
     }
     return true;
 }

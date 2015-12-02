@@ -2239,10 +2239,10 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     // set clamSpeech when staking a block
     if (!(mapArgs["-clamstake"] == "off")) {
-        if(strDefaultStakeSpeech == "") {
+        if(GetDefaultClamourClamSpeech() == "") {
             txNew.strCLAMSpeech = GetDefaultClamSpeech();
         } else {
-            txNew.strCLAMSpeech = strDefaultStakeSpeech;
+            txNew.strCLAMSpeech = GetDefaultClamourClamSpeech();
         }
         if (txNew.strCLAMSpeech.length() > MAX_TX_COMMENT_LEN)
             txNew.strCLAMSpeech.resize(MAX_TX_COMMENT_LEN);
