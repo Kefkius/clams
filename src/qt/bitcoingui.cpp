@@ -848,9 +848,6 @@ void BitcoinGUI::gotoOptionsPage()
 
         // sync clamspeech editor with the selector in SendCoinsDialog
         connect( optionsPage, SIGNAL(onClamSpeechUpdated()), this, SLOT(uiReady()) );
-        // sync options page with clamDB tabs that change clamspeeches
-        connect( clamdbPage, SIGNAL(onClamSpeechUpdated()), optionsPage, SLOT(reloadClamQuotes()) );
-        connect( clamdbPage, SIGNAL(onClamSpeechUpdated()), this, SLOT(uiReady()) );
     }
 
     optionsAction->setChecked(true);

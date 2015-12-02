@@ -6,6 +6,7 @@
 
 extern std::vector<std::string> clamSpeechList;
 extern std::vector<std::string> clamSpeech;
+extern std::vector<std::string> clamourClamSpeech;
 extern std::vector<std::string> quoteList;
 
 void CSLoad();

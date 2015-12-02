@@ -17,7 +17,6 @@ ClamDB::ClamDB(QWidget *parent) :
     ui->tabWidget->addTab(this->notaryPage, tr("Notary"));
 
     clamourPage = new ClamourPage();
-    connect( clamourPage, SIGNAL(onClamSpeechUpdated()), this, SLOT(on_clamspeech_updated()) );
     ui->tabWidget->addTab(this->clamourPage, tr("CLAMour"));
 }
 
@@ -33,7 +32,3 @@ void ClamDB::setModel(WalletModel *model)
     this->notaryPage->setModel(model);
 }
 
-void ClamDB::on_clamspeech_updated()
-{
-    emit onClamSpeechUpdated();
-}

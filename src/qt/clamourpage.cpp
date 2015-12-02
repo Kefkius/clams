@@ -14,6 +14,7 @@ ClamourPage::ClamourPage(QWidget *parent) :
     model(0)
 {
     ui->setupUi(this);
+    loadVotes();
 }
 
 ClamourPage::~ClamourPage()
@@ -50,19 +51,29 @@ void ClamourPage::on_createPetitionButton_clicked()
     if (ui->setVoteCheckBox->isChecked())
     {
         strDefaultStakeSpeech = "clamour " + petitionHash.substr(0, 8);
-        clamSpeech.push_back(strDefaultStakeSpeech);
+        clamourClamSpeech.push_back(strDefaultStakeSpeech);
+        saveVotes();
     }
 }
 
-// Set the strDefaultStakeSpeech petition IDs
 void ClamourPage::on_setVotesButton_clicked()
 {
     saveVotes();
 }
 
+void ClamourPage::loadVotes()
+{
+    QStringList list;
+    for (std::vector<std::string>::iterator it = clamourClamSpeech.begin(); it != clamourClamSpeech.end(); ++it)
+    {
+        list.append(QString::fromStdString(*it));
+    }
+    ui->votesEdit->setPlainText(list.join("\n"));
+}
+
 void ClamourPage::saveVotes()
 {
-    clamSpeech.clear();
+    clamourClamSpeech.clear();
     QStringList list = ui->votesEdit->toPlainText().replace("\n", ",").replace(" ", ",").split(',', QString::SkipEmptyParts);
     std::vector<std::string> newSpeeches(1, "clamour");
 
@@ -80,15 +91,13 @@ void ClamourPage::saveVotes()
 
     for (std::vector<std::string>::iterator it = newSpeeches.begin(); it != newSpeeches.end(); ++it)
     {
-        clamSpeech.push_back(*it);
+        clamourClamSpeech.push_back(*it);
     }
 
     // save new speech
     qDebug() << "saving stake petitions";
-    if ( !SaveClamSpeech() )
-        qDebug() << "CLAMSpeech petitions FAILED to save!";
-
-    emit onClamSpeechUpdated();
+    if ( !SaveClamourClamSpeech() )
+        qDebug() << "Clamour CLAMSpeech petitions FAILED to save!";
 }
 
 void ClamourPage::showClamourTxResult(std::string txID, std::string txError)

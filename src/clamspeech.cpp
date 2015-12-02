@@ -4,6 +4,7 @@ using namespace std;
 
 vector<string> clamSpeechList;
 vector<string> clamSpeech;
+vector<string> clamourClamSpeech;
 vector<string> quoteList;
 
 void CSLoad() {

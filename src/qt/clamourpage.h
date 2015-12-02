@@ -18,9 +18,6 @@ public:
 
     void setModel(WalletModel *model);
 
-signals:
-    void onClamSpeechUpdated();
-
 public slots:
     void showClamourTxResult(std::string txID, std::string txError);
 
@@ -35,6 +32,7 @@ private:
     Ui::ClamourPage *ui;
     WalletModel *model;
 
+    void loadVotes();
     void saveVotes();
 };
 

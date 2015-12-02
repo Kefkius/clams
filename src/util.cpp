@@ -1098,6 +1098,13 @@ boost::filesystem::path GetQuoteFile()
     return pathQuoteFile;
 }
 
+boost::filesystem::path GetClamourClamSpeechFile()
+{
+    boost::filesystem::path pathClamourSpeechFile(GetArg("-clamourclamspeech", "clamourclamspeech.txt"));
+    if (!pathClamourSpeechFile.is_complete()) pathClamourSpeechFile = GetDataDir() / pathClamourSpeechFile;
+    return pathClamourSpeechFile;
+}
+
 string HashToString(unsigned char* hash,int n) {
     char outputBuffer[2*n+1];
     for(int i=0;i<n;i++) {
@@ -1137,6 +1144,8 @@ bool LoadClamSpeech()
     {
         clamSpeech.push_back (line);
     }
+
+    LoadClamourClamSpeech();
     
     return true;   
 }
@@ -1173,6 +1182,40 @@ bool SaveClamSpeech()
         return false;
     }
     return true; 
+}
+
+bool LoadClamourClamSpeech()
+{
+    clamourClamSpeech.clear();
+    std::ifstream speechfile(GetClamourClamSpeechFile().string().c_str());
+
+    if(!speechfile) //Always test the file open.
+        return false;
+
+    string line;
+    while (getline(speechfile, line, '\n'))
+    {
+        clamourClamSpeech.push_back (line);
+    }
+    
+    return true;
+}
+
+bool SaveClamourClamSpeech()
+{
+    if (boost::filesystem::exists(GetClamourClamSpeechFile())) {
+        FILE* file = fopen(GetClamourClamSpeechFile().string().c_str(), "w");
+        if (file)
+        {
+            for (std::vector<std::string>::iterator it = clamourClamSpeech.begin(); it != clamourClamSpeech.end(); it++) {
+                fprintf(file, "%s\n", it->c_str());
+            }
+            fclose(file);
+        } else {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool LoadQuoteList()

@@ -20,12 +20,6 @@ public:
 
     void setModel(WalletModel *model);
 
-public slots:
-       void on_clamspeech_updated();
-
-signals:
-    void onClamSpeechUpdated();
-
 private:
     Ui::ClamDB *ui;
     WalletModel *model;
